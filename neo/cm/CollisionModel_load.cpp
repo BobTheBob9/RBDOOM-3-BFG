@@ -3575,14 +3575,18 @@ cm_model_t* idCollisionModelManagerLocal::LoadBinaryModelFromFile( idFile* file,
 	for( int i = 0; i < materials.Num(); i++ )
 	{
 		file->ReadString( materialName );
+#ifndef ID_DEDICATED
 		if( materialName.IsEmpty() )
 		{
+#endif // ID_DEDICATED
 			materials[i] = NULL;
+#ifndef ID_DEDICATED
 		}
 		else
 		{
 			materials[i] = declManager->FindMaterial( materialName );
 		}
+#endif // ID_DEDICATED
 	}
 	idList< cm_polygon_t* > polys;
 	idList< cm_brush_t* > brushes;
@@ -3596,7 +3600,9 @@ cm_model_t* idCollisionModelManagerLocal::LoadBinaryModelFromFile( idFile* file,
 		file->ReadBig( numEdges );
 		polys[i] = AllocPolygon( model, numEdges );
 		polys[i]->numEdges = numEdges;
+#ifndef ID_DEDICATED
 		polys[i]->material = materials[materialIndex];
+#endif // ID_DEDICATED
 		file->ReadBig( polys[i]->bounds );
 		file->ReadBig( polys[i]->checkcount );
 		file->ReadBig( polys[i]->contents );
@@ -3611,7 +3617,9 @@ cm_model_t* idCollisionModelManagerLocal::LoadBinaryModelFromFile( idFile* file,
 		file->ReadBig( numPlanes );
 		brushes[i] = AllocBrush( model, numPlanes );
 		brushes[i]->numPlanes = numPlanes;
+#ifndef ID_DEDICATED
 		brushes[i]->material = materials[materialIndex];
+#endif // ID_DEDICATED
 		file->ReadBig( brushes[i]->checkcount );
 		file->ReadBig( brushes[i]->bounds );
 		file->ReadBig( brushes[i]->contents );

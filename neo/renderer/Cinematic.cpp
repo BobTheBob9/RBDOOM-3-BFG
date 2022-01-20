@@ -750,6 +750,7 @@ idCinematicLocal::InitFromFile
 */
 bool idCinematicLocal::InitFromFile( const char* qpath, bool amilooping )
 {
+#ifndef ID_DEDICATED
 	unsigned short RoQID;
 
 	Close();
@@ -833,6 +834,7 @@ bool idCinematicLocal::InitFromFile( const char* qpath, bool amilooping )
 	}
 
 	RoQShutdown();
+#endif // !ID_DEDICATED
 	return false;
 }
 

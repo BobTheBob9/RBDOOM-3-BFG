@@ -412,14 +412,18 @@ bool idRenderModelStatic::LoadBinaryModel( idFile* file, const ID_TIME_T sourceT
 		file->ReadBig( surfaces[i].id );
 		idStr materialName;
 		file->ReadString( materialName );
+#ifndef ID_DEDICATED
 		if( materialName.IsEmpty() )
 		{
+#endif // !ID_DEDICATED
 			surfaces[i].shader = NULL;
+#ifndef ID_DEDICATED
 		}
 		else
 		{
 			surfaces[i].shader = declManager->FindMaterial( materialName );
 		}
+#endif // !ID_DEDICATED
 
 		bool isGeometry;
 		file->ReadBig( isGeometry );

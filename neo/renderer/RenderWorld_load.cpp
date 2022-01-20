@@ -1116,6 +1116,7 @@ void idRenderWorldLocal::AddWorldModelEntities()
 
 		idRenderModel* hModel = def->parms.hModel;
 
+#ifndef ID_DEDICATED
 		for( int j = 0; j < hModel->NumSurfaces(); j++ )
 		{
 			const modelSurface_t* surf = hModel->Surface( j );
@@ -1125,6 +1126,7 @@ void idRenderWorldLocal::AddWorldModelEntities()
 				def->needsPortalSky = true;
 			}
 		}
+#endif // !ID_DEDICATED
 
 		// the local and global reference bounds are the same for area models
 		def->localReferenceBounds = def->parms.hModel->Bounds();

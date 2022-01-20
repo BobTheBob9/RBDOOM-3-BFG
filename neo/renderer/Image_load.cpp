@@ -284,6 +284,7 @@ On exit, the idImage will have a valid OpenGL texture number that can be bound
 */
 void idImage::ActuallyLoadImage( bool fromBackEnd )
 {
+#ifndef ID_DEDICATED
 	// if we don't have a rendering context yet, just return
 	//if( !tr.IsInitialized() )
 	//{
@@ -593,6 +594,36 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 		const byte* data = im.GetImageData( i );
 		SubImageUpload( img.level, 0, 0, img.destZ, img.width, img.height, data );
 	}
+#else
+	if (generatorFunction)
+	{
+		generatorFunction(this);
+		return;
+	}
+	
+	idStrStatic< MAX_OSPATH > generatedName = GetName();
+	GetGeneratedName(generatedName, usage, cubeFiles);
+	
+	// RB: try to load the .bimage and skip if sourceFileTime is newer
+	idBinaryImage im(generatedName);
+	binaryFileTime = FILE_NOT_FOUND_TIMESTAMP;
+	
+	opts.width = 1;
+	opts.height = 1;
+	opts.numLevels = 1;
+	DeriveOpts();
+	AllocImage();
+
+	// clear the data so it's not left uninitialized
+	idTempArray<byte> clear(opts.width* opts.height * 4);
+	memset(clear.Ptr(), 0, clear.Size());
+	for (int level = 0; level < opts.numLevels; level++)
+	{
+		SubImageUpload(level, 0, 0, 0, opts.width >> level, opts.height >> level, clear.Ptr());
+	}
+
+	defaulted = true; // RB
+#endif // !ID_DEDICATED
 }
 
 /*

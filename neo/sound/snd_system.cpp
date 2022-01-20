@@ -31,8 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h"
 
+#ifdef ID_DEDICATED
+idCVar s_noSound( "s_noSound", "1", CVAR_BOOL | CVAR_ROM, "returns NULL for all sounds loaded and does not update the sound rendering" );
+#else
 idCVar s_noSound( "s_noSound", "0", CVAR_BOOL, "returns NULL for all sounds loaded and does not update the sound rendering" );
-
+#endif
 #ifdef ID_RETAIL
 	idCVar s_useCompression( "s_useCompression", "1", CVAR_BOOL, "Use compressed sound files (mp3/xma)" );
 	idCVar s_playDefaultSound( "s_playDefaultSound", "0", CVAR_BOOL, "play a beep for missing sounds" );

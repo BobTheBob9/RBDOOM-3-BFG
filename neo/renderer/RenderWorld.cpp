@@ -1044,6 +1044,7 @@ to handle mirrors,
 */
 void idRenderWorldLocal::RenderScene( const renderView_t* renderView )
 {
+#ifndef ID_DEDICATED
 	if( !tr.IsInitialized() )
 	{
 		return;
@@ -1165,6 +1166,7 @@ void idRenderWorldLocal::RenderScene( const renderView_t* renderView )
 
 	// prepare for any 2D drawing after this
 	tr.guiModel->Clear();
+#endif // !ID_DEDICATED
 }
 
 /*

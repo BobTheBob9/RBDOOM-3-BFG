@@ -914,6 +914,7 @@ idMapBrush::IsOriginBrush
 */
 bool idMapBrush::IsOriginBrush() const
 {
+#ifndef ID_DEDICATED
 	for( int i = 0; i < GetNumSides(); i++ )
 	{
 		const idMaterial* material = declManager->FindMaterial( sides[i]->GetMaterial() );
@@ -922,6 +923,7 @@ bool idMapBrush::IsOriginBrush() const
 			return true;
 		}
 	}
+#endif // !ID_DEDICATED
 
 	return false;
 }

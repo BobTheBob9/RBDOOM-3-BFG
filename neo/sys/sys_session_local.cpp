@@ -61,7 +61,11 @@ idCVar net_testPartyMemberConnectFail( "net_testPartyMemberConnectFail", "-1", C
 idCVar net_offlineTransitionThreshold( "net_offlineTransitionThreshold", "1000", CVAR_INTEGER, "Time, in milliseconds, to wait before kicking back to the main menu when a profile losses backend connection during an online game" );
 
 idCVar net_port( "net_port", "27015", CVAR_INTEGER | CVAR_NOCHEAT, "host port number" ); // Port to host when using dedicated servers, port to broadcast on when looking for a dedicated server to connect to
+#if ID_DEDICATED
+idCVar net_headlessServer("net_headlessServer", "1", CVAR_BOOL | CVAR_ROM, "toggle to automatically host a game and allow peer[0] to control menus");
+#else
 idCVar net_headlessServer( "net_headlessServer", "0", CVAR_BOOL, "toggle to automatically host a game and allow peer[0] to control menus" );
+#endif
 
 const char* idSessionLocal::stateToString[ NUM_STATES ] =
 {
