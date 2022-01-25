@@ -537,9 +537,7 @@ void idCommonLocal::Frame()
 
 		eventLoop->RunEventLoop();
 
-#ifndef ID_DEDICATED
 		renderSystem->OnFrame();
-#endif // !ID_DEDICATED
 
 		// DG: prepare new ImGui frame - I guess this is a good place, as all new events should be available?
 		ImGuiHook::NewFrame();
@@ -594,8 +592,7 @@ void idCommonLocal::Frame()
 										   || ( game && game->Shell_IsActive() ) || com_pause.GetInteger() ) ) );
 #endif
 		// RB end
-		
-#ifndef ID_DEDICATED
+
 		// save the screenshot and audio from the last draw if needed
 		if( aviCaptureMode )
 		{
@@ -639,7 +636,6 @@ void idCommonLocal::Frame()
 			renderSystem->SwapCommandBuffers_FinishRendering( &time_frontend, &time_backend, &time_shadows, &time_gpu, &stats_backend, &stats_frontend );
 		}
 		frameTiming.finishSyncTime = Sys_Microseconds();
-#endif // !ID_DEDICATED
 
 		//--------------------------------------------
 		// Determine how many game tics we are going to run,
@@ -874,7 +870,6 @@ void idCommonLocal::Frame()
 		// start the game / draw command generation thread going in the background
 		gameReturn_t ret = gameThread.RunGameAndDraw( numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames );
 
-#ifndef ID_DEDICATED
 		// foresthale 2014-05-12: also check com_editors as many of them are not particularly thread-safe (editLights for example)
 		// SRS - if com_editors is active make sure com_smp != -1, otherwise skip and call SwapCommandBuffers_FinishRendering later
 		frameTiming.startRenderTime = Sys_Microseconds();
@@ -909,7 +904,6 @@ void idCommonLocal::Frame()
 		// make sure the game / draw thread has completed
 		// This may block if the game is taking longer than the render back end
 		gameThread.WaitForThread();
-#endif // !ID_DEDICATED
 
 		// Send local usermds to the server.
 		// This happens after the game frame has run so that prediction data is up to date.

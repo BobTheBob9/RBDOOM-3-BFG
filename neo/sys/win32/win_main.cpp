@@ -51,11 +51,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
-#ifdef ID_DEDICATED
-idCVar Win32Vars_t::in_mouse("in_mouse", "0", CVAR_SYSTEM | CVAR_BOOL | CVAR_ROM, "enable mouse input");
-#else
 idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
-#endif
 idCVar Win32Vars_t::win_allowAltTab( "win_allowAltTab", "0", CVAR_SYSTEM | CVAR_BOOL, "allow Alt-Tab when fullscreen" );
 idCVar Win32Vars_t::win_notaskkeys( "win_notaskkeys", "0", CVAR_SYSTEM | CVAR_INTEGER, "disable windows task keys" );
 idCVar Win32Vars_t::win_username( "win_username", "", CVAR_SYSTEM | CVAR_INIT, "windows user name" );
@@ -1998,12 +1994,10 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	common->Printf( Sys_FPU_GetState() );
 #endif
 
-#ifndef ID_DEDICATED
-	if (win32.win_notaskkeys.GetInteger())
+	if( win32.win_notaskkeys.GetInteger() )
 	{
-		DisableTaskKeys(TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE);
+		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
 	}
-#endif // !ID_DEDICATED
 
 	// hide or show the early console as necessary
 	if( win32.win_viewlog.GetInteger() )

@@ -153,7 +153,6 @@ The renderer calls this when the user adjusts r_gamma or r_brightness
 */
 void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigned short blue[256] )
 {
-#ifndef ID_DEDICATED
 	unsigned short table[3][256];
 	int i;
 
@@ -173,7 +172,6 @@ void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigne
 	{
 		common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
 	}
-#endif // !ID_DEDICATED
 }
 
 /*
@@ -1497,7 +1495,6 @@ GLimp_SwapBuffers
 #if !defined(USE_VULKAN)
 void GLimp_SwapBuffers()
 {
-#ifndef ID_DEDICATED
 	if( r_swapInterval.IsModified() )
 	{
 		r_swapInterval.ClearModified();
@@ -1519,7 +1516,6 @@ void GLimp_SwapBuffers()
 	}
 
 	SwapBuffers( win32.hDC );
-#endif // !ID_DEDICATED
 }
 #endif
 

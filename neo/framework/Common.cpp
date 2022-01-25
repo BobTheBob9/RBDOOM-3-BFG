@@ -876,7 +876,6 @@ idCommonLocal::RenderSplash
 */
 void idCommonLocal::RenderSplash()
 {
-#ifndef ID_DEDICATED
 	//const emptyCommand_t* renderCommands = NULL;
 
 	// RB: this is the same as Doom 3 renderSystem->BeginFrame()
@@ -909,7 +908,6 @@ void idCommonLocal::RenderSplash()
 
 	// RB: this is the same as Doom 3 renderSystem->EndFrame()
 	//renderSystem->SwapCommandBuffers_FinishRendering( &time_frontend, &time_backend, &time_shadows, &time_gpu );
-#endif // !ID_DEDICATED
 }
 
 /*
@@ -919,7 +917,6 @@ idCommonLocal::RenderBink
 */
 void idCommonLocal::RenderBink( const char* path )
 {
-#ifndef ID_DEDICATED
 	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
 	const float sysHeight = renderSystem->GetHeight();
 	const float sysAspect = sysWidth / sysHeight;
@@ -1031,7 +1028,6 @@ void idCommonLocal::RenderBink( const char* path )
 	// RB end
 
 	material->MakeDefault();
-#endif // !ID_DEDICATED
 }
 
 /*
@@ -1297,10 +1293,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// if any archived cvars are modified after this, we will trigger a writing of the config file
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 
-#ifndef ID_DEDICATED
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
-#endif // !ID_DEDICATED
 
 		// Support up to 2 digits after the decimal point
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
@@ -1309,7 +1303,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// start the sound system, but don't do any hardware operations yet
 		soundSystem->Init();
 
-#ifndef ID_DEDICATED
 		// initialize the renderSystem data structures
 		renderSystem->Init();
 
@@ -1351,8 +1344,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 
 		int legalStartTime = Sys_Milliseconds();
-#endif // !ID_DEDICATED
-
 		declManager->Init2();
 
 		// initialize string database so we can use it for loading messages
@@ -1361,9 +1352,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// spawn the game thread, even if we are going to run without SMP
 		// one meg stack, because it can parse decls from gui surfaces (unfortunately)
 		// use a lower priority so job threads can run on the same core
-#ifndef ID_DEDICATED
 		gameThread.StartWorkerThread( "Game/Draw", CORE_1B, THREAD_BELOW_NORMAL, 0x100000 );
-#endif // !ID_DEDICATED
 		// boost this thread's priority, so it will prevent job threads from running while
 		// the render back end still has work to do
 
@@ -1372,10 +1361,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 		Sys_SetRumble( 0, 0, 0 );
 
-#ifndef ID_DEDICATED
 		// initialize the user interfaces
 		uiManager->Init();
-#endif // !ID_DEDICATED
 
 		// startup the script debugger
 		// DebuggerServerInit();
@@ -1386,7 +1373,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// load the game dll
 		LoadGameDLL();
 
-#ifndef ID_DEDICATED
 		// On the PC touch them all so they get included in the resource build
 		if( !fileSystem->UsingResourceFiles() )
 		{
@@ -1401,7 +1387,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 				declManager->DeclByIndex( DECL_VIDEO, i );
 			}
 		}
-#endif // !ID_DEDICATED
 
 		fileSystem->UnloadResourceContainer( "_ordered" );
 
@@ -1426,23 +1411,18 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			game->Leaderboards_Init();
 		}
 
-#ifndef ID_DEDICATED
 		CreateMainMenu();
 
 		commonDialog.Init();
-#endif // !ID_DEDICATED
 
 		// load the console history file
 		consoleHistory.LoadHistoryFile();
 
 		AddStartupCommands();
 
-#ifndef ID_DEDICATED
 		StartMenu( true );
-#endif // !ID_DEDICATED
-
 // SRS - changed ifndef to ifdef since legalMinTime should apply to retail builds, not dev builds
-#ifdef ID_RETAIL && !ID_DEDICATED
+#ifdef ID_RETAIL
 		while( Sys_Milliseconds() - legalStartTime < legalMinTime )
 		{
 			RenderSplash();
@@ -1464,16 +1444,14 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		{
 			idPreloadManifest manifest;
 			manifest.LoadManifest( "_common.preload" );
-#ifndef ID_DEDICATED
 			globalImages->Preload( manifest, false );
 			soundSystem->Preload( manifest );
-#endif // !ID_DEDICATED
 		}
 
 		fileSystem->EndLevelLoad();
 
 		// RB begin
-#if defined(USE_DOOMCLASSIC) && !ID_DEDICATED
+#if defined(USE_DOOMCLASSIC)
 		// Initialize support for Doom classic.
 		doomClassicMaterial = declManager->FindMaterial( "_doomClassic" );
 		idImage* image = globalImages->GetImage( "_doomClassic" );
@@ -1493,7 +1471,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		com_fullyInitialized = true;
 
 
-#ifndef ID_DEDICATED
 		// No longer need the splash screen
 		if( splashScreen != NULL )
 		{
@@ -1506,16 +1483,10 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 				}
 			}
 		}
-#endif // ID_DEDICATED
 
 		Printf( "--- Common Initialization Complete ---\n" );
 
 		idLib::Printf( "QA Timing IIS: %06dms\n", Sys_Milliseconds() );
-
-#if ID_DEDICATED
-		Printf( "starting map game/admin for dedicated server\n" );
-		StartNewGame("game/admin", false, 0);
-#endif // ID_DEDICATED
 	}
 	catch( idException& )
 	{
