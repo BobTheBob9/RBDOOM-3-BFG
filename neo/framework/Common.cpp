@@ -1729,8 +1729,10 @@ void idCommonLocal::BusyWait()
 {
 	Sys_GenerateEvents();
 
+#ifndef ID_DEDICATED
 	const bool captureToImage = false;
 	UpdateScreen( captureToImage );
+#endif // !ID_DEDICATED
 
 	session->UpdateSignInManager();
 	session->Pump();

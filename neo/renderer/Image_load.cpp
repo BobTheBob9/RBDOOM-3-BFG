@@ -596,6 +596,8 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 	}
 
 #else
+	// Load dummy image on dedicated servers
+	// ideally we shouldn't be loading any images at all, but if we have to it's best to load a dummy one with least memory footprint
 	if (generatorFunction)
 	{
 		generatorFunction(this);
@@ -605,7 +607,6 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 	idStrStatic< MAX_OSPATH > generatedName = GetName();
 	GetGeneratedName(generatedName, usage, cubeFiles);
 	
-	// RB: try to load the .bimage and skip if sourceFileTime is newer
 	idBinaryImage im(generatedName);
 	binaryFileTime = FILE_NOT_FOUND_TIMESTAMP;
 	

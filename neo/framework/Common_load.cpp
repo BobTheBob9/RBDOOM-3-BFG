@@ -683,8 +683,10 @@ void idCommonLocal::ExecuteMapChange()
 	loadGUI = NULL;
 
 
+#ifndef ID_DEDICATED
 	// capture the current screen and start a wipe
 	StartWipe( "wipe2Material" );
+#endif // !ID_DEDICATED
 
 	// we are valid for game draws now
 	insideExecuteMapChange = false;
@@ -709,6 +711,7 @@ Pumps the session and if multiplayer, displays dialogs during the loading proces
 */
 void idCommonLocal::UpdateLevelLoadPacifier()
 {
+#ifndef ID_DEDICATED
 	autoRenderIconType_t icon = AUTORENDER_DEFAULTICON;
 	bool autoswapsRunning = renderSystem->AreAutomaticBackgroundSwapsRunning( &icon );
 	if( !insideExecuteMapChange && !autoswapsRunning )
@@ -792,6 +795,7 @@ void idCommonLocal::UpdateLevelLoadPacifier()
 			renderSystem->BeginAutomaticBackgroundSwaps( icon );
 		}
 	}
+#endif
 }
 
 // foresthale 2014-05-30: loading progress pacifier for binarize operations only

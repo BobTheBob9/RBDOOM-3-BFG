@@ -159,6 +159,7 @@ int idGameThread::Run()
 
 	SetThreadGameTime( ( commonLocal.frameTiming.finishGameTime - commonLocal.frameTiming.startGameTime ) / 1000 );
 
+#ifndef ID_DEDICATED
 	// build render commands and geometry
 	{
 		SCOPED_PROFILE_EVENT( "Draw" );
@@ -170,6 +171,7 @@ int idGameThread::Run()
 	SetThreadRenderTime( ( commonLocal.frameTiming.finishDrawTime - commonLocal.frameTiming.finishGameTime ) / 1000 );
 
 	SetThreadTotalTime( ( commonLocal.frameTiming.finishDrawTime - commonLocal.frameTiming.startGameTime ) / 1000 );
+#endif // !ID_DEDICATED
 
 	return 0;
 }
@@ -246,12 +248,12 @@ idCommonLocal::Draw
 */
 void idCommonLocal::Draw()
 {
-#ifndef ID_DEDICATED
 	// debugging tool to test frame dropping behavior
 	if( com_sleepDraw.GetInteger() )
 	{
 		Sys_Sleep( com_sleepDraw.GetInteger() );
 	}
+#ifndef ID_DEDICATED
 
 	if( loadPacifierBinarizeActive )
 	{
