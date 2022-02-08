@@ -1839,6 +1839,12 @@ idGameLocal::GetLocalClientNum
 */
 int idGameLocal::GetLocalClientNum() const
 {
+#if ID_DEDICATED
+	// TODO: ensure this doesn't break things ever, feels like it could try to index an array with it or smth but hasn't yet
+	// need to return -1, otherwise player 0's inputs won't register properly
+	return -1;
+#endif // ID_DEDICATED
+
 	localUserHandle_t localUserHandle = session->GetSignInManager().GetMasterLocalUserHandle();
 	if( !localUserHandle.IsValid() )
 	{
@@ -1890,8 +1896,10 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 			// precache model/animations
 			if( declManager->FindType( DECL_MODELDEF, kv->GetValue(), false ) == NULL )
 			{
+#ifndef ID_DEDICATED
 				// precache the render model
 				renderModelManager->FindModel( kv->GetValue() );
+#endif // !ID_DEDICATED
 
 				// precache .cm files only
 				collisionModelManager->LoadModel( kv->GetValue() );
@@ -1900,11 +1908,13 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 		kv = dict->MatchPrefix( "model", kv );
 	}
 
+#ifndef ID_DEDICATED
 	kv = dict->FindKey( "s_shader" );
 	if( kv != NULL && kv->GetValue().Length() )
 	{
 		declManager->FindType( DECL_SOUND, kv->GetValue() );
 	}
+#endif // !ID_DEDICATED
 
 	kv = dict->MatchPrefix( "snd", NULL );
 	while( kv != NULL )
@@ -1916,7 +1926,7 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 		kv = dict->MatchPrefix( "snd", kv );
 	}
 
-
+#ifndef ID_DEDICATED
 	kv = dict->MatchPrefix( "gui", NULL );
 	while( kv )
 	{
@@ -2005,6 +2015,7 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 		}
 		kv = dict->MatchPrefix( "smoke", kv );
 	}
+#endif // !ID_DEDICATED
 
 	kv = dict->MatchPrefix( "skin", NULL );
 	while( kv != NULL )
@@ -2055,6 +2066,7 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 		kv = dict->MatchPrefix( "item", kv );
 	}
 
+#ifndef ID_DEDICATED
 	kv = dict->MatchPrefix( "pda_name", NULL );
 	while( kv != NULL )
 	{
@@ -2074,6 +2086,7 @@ void idGameLocal::CacheDictionaryMedia( const idDict* dict )
 		}
 		kv = dict->MatchPrefix( "video", kv );
 	}
+#endif // !ID_DEDICATED
 
 	kv = dict->MatchPrefix( "audio", NULL );
 	while( kv != NULL )

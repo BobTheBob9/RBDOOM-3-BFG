@@ -750,6 +750,10 @@ idCinematicLocal::InitFromFile
 */
 bool idCinematicLocal::InitFromFile( const char* qpath, bool amilooping )
 {
+#ifdef ID_DEDICATED
+	assert( false, "idCinematicLocal::InitFromFile should not be called on dedicated" );
+#endif
+
 	unsigned short RoQID;
 
 	Close();

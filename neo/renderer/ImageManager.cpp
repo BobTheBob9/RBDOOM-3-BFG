@@ -876,7 +876,11 @@ void idImageManager::EndLevelLoad()
 
 	idLib::Printf( "----- idImageManager::EndLevelLoad -----\n" );
 	int start = Sys_Milliseconds();
-	int	loadCount = LoadLevelImages( true );
+
+	int	loadCount = 0;
+#ifndef ID_DEDICATED
+	loadCount = LoadLevelImages( true );
+#endif // !ID_DEDICATED
 
 	int	end = Sys_Milliseconds();
 	idLib::Printf( "%5i images loaded in %5.1f seconds\n", loadCount, ( end - start ) * 0.001 );

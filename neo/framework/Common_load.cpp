@@ -465,11 +465,13 @@ void idCommonLocal::ExecuteMapChange()
 		fileSystem->BeginLevelLoad( currentMapName, saveFile.GetDataPtr(), saveFile.GetAllocated() );
 	}
 
+#ifndef ID_DEDICATED
 	// capture the current screen and start a wipe
 	// immediately complete the wipe to fade out the level transition
 	// run the wipe to completion
 	StartWipe( "wipeMaterial", true );
 	CompleteWipe();
+#endif // !ID_DEDICATED
 
 	int sm = Sys_Milliseconds();
 	// shut down the existing game if it is running
@@ -489,6 +491,7 @@ void idCommonLocal::ExecuteMapChange()
 
 	//Sys_DumpMemory( true );
 
+#ifndef ID_DEDICATED
 	// load / program a gui to stay up on the screen while loading
 	// set the loading gui that we will wipe to
 	bool hellMap = false;
@@ -496,6 +499,7 @@ void idCommonLocal::ExecuteMapChange()
 
 	// Stop rendering the wipe
 	ClearWipe();
+#endif // !ID_DEDICATED
 
 
 	if( fileSystem->UsingResourceFiles() )
@@ -506,8 +510,10 @@ void idCommonLocal::ExecuteMapChange()
 		manifestName += ".preload";
 		idPreloadManifest manifest;
 		manifest.LoadManifest( manifestName );
+#ifndef ID_DEDICATED
 		renderSystem->Preload( manifest, currentMapName );
 		soundSystem->Preload( manifest );
+#endif // !ID_DEDICATED
 		game->Preload( manifest );
 	}
 

@@ -137,7 +137,8 @@ int idGameThread::Run()
 			}
 		}
 	}
-
+	
+#ifndef ID_DEDICATED
 	// we should have consumed all of our usercmds
 	if( userCmdMgr )
 	{
@@ -152,6 +153,7 @@ int idGameThread::Run()
 			idLib::Printf( "idGameThread::Run: didn't consume all usercmds\n" );
 		}
 	}
+#endif // !ID_DEDICATED
 
 	commonLocal.frameTiming.finishGameTime = Sys_Microseconds();
 
@@ -244,6 +246,7 @@ idCommonLocal::Draw
 */
 void idCommonLocal::Draw()
 {
+#ifndef ID_DEDICATED
 	// debugging tool to test frame dropping behavior
 	if( com_sleepDraw.GetInteger() )
 	{
@@ -397,6 +400,7 @@ void idCommonLocal::Draw()
 		// draw the half console / notify console on top of everything
 		console->Draw( false );
 	}
+#endif // !ID_DEDICATED
 }
 
 /*
@@ -537,10 +541,12 @@ void idCommonLocal::Frame()
 
 		eventLoop->RunEventLoop();
 
+#ifndef ID_DEDICATED
 		renderSystem->OnFrame();
 
 		// DG: prepare new ImGui frame - I guess this is a good place, as all new events should be available?
 		ImGuiHook::NewFrame();
+#endif // !ID_DEDICATED
 
 		// Activate the shell if it's been requested
 		if( showShellRequested && game )
@@ -593,6 +599,7 @@ void idCommonLocal::Frame()
 #endif
 		// RB end
 
+#ifndef ID_DEDICATED
 		// save the screenshot and audio from the last draw if needed
 		if( aviCaptureMode )
 		{
@@ -636,6 +643,7 @@ void idCommonLocal::Frame()
 			renderSystem->SwapCommandBuffers_FinishRendering( &time_frontend, &time_backend, &time_shadows, &time_gpu, &stats_backend, &stats_frontend );
 		}
 		frameTiming.finishSyncTime = Sys_Microseconds();
+#endif // !ID_DEDICATED
 
 		//--------------------------------------------
 		// Determine how many game tics we are going to run,
@@ -833,6 +841,7 @@ void idCommonLocal::Frame()
 			usercmdGen->Clear();
 		}
 
+#ifndef ID_DEDICATED
 		usercmd_t newCmd = usercmdGen->GetCurrentUsercmd();
 
 		// Store server game time - don't let time go past last SS time in case we are extrapolating
@@ -855,6 +864,7 @@ void idCommonLocal::Frame()
 			newCmd.clientGameMilliseconds = FRAME_TO_MSEC( gameFrame - numGameFrames + i + 1 );
 			userCmdMgr.PutUserCmdForPlayer( game->GetLocalClientNum(), newCmd );
 		}
+#endif // !ID_DEDICATED
 
 		// RB begin
 #if defined(USE_DOOMCLASSIC)
@@ -870,6 +880,7 @@ void idCommonLocal::Frame()
 		// start the game / draw command generation thread going in the background
 		gameReturn_t ret = gameThread.RunGameAndDraw( numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames );
 
+#ifndef ID_DEDICATED
 		// foresthale 2014-05-12: also check com_editors as many of them are not particularly thread-safe (editLights for example)
 		// SRS - if com_editors is active make sure com_smp != -1, otherwise skip and call SwapCommandBuffers_FinishRendering later
 		frameTiming.startRenderTime = Sys_Microseconds();
@@ -900,19 +911,23 @@ void idCommonLocal::Frame()
 		}
 		// SRS - Use finishSyncTime_EndFrame to record timing after sync for com_smp = -1, and just before gameThread.WaitForThread() for com_smp = 1
 		frameTiming.finishSyncTime_EndFrame = Sys_Microseconds();
+#endif // !ID_DEDICATED
 
 		// make sure the game / draw thread has completed
 		// This may block if the game is taking longer than the render back end
 		gameThread.WaitForThread();
 
+#ifndef ID_DEDICATED
 		// Send local usermds to the server.
 		// This happens after the game frame has run so that prediction data is up to date.
 		SendUsercmds( Game()->GetLocalClientNum() );
+#endif // !ID_DEDICATED
 
 		// Now that we have an updated game frame, we can send out new snapshots to our clients
 		session->Pump(); // Pump to get updated usercmds to relay
 		SendSnapshots();
 
+#ifndef ID_DEDICATED
 		// Render the sound system using the latest commands from the game thread
 		// SRS - Enable sound during normal playDemo playback but not during timeDemo
 		if( pauseGame && !( readDemo && !timeDemo ) )
@@ -932,6 +947,7 @@ void idCommonLocal::Frame()
 		}
 
 		soundSystem->Render();
+#endif // !ID_DEDICATED
 
 		// process the game return for map changes, etc
 		ProcessGameReturn( ret );

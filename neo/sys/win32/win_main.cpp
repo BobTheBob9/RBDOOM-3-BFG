@@ -51,7 +51,11 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
-idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
+#ifdef ID_DEDICATED
+idCVar Win32Vars_t::in_mouse("in_mouse", "0", CVAR_SYSTEM | CVAR_BOOL | CVAR_ROM, "enable mouse input");
+#else
+idCVar Win32Vars_t::in_mouse("in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input");
+#endif
 idCVar Win32Vars_t::win_allowAltTab( "win_allowAltTab", "0", CVAR_SYSTEM | CVAR_BOOL, "allow Alt-Tab when fullscreen" );
 idCVar Win32Vars_t::win_notaskkeys( "win_notaskkeys", "0", CVAR_SYSTEM | CVAR_INTEGER, "disable windows task keys" );
 idCVar Win32Vars_t::win_username( "win_username", "", CVAR_SYSTEM | CVAR_INIT, "windows user name" );
@@ -1684,7 +1688,9 @@ void Sys_Init()
 		common->Error( "SSE2 not supported!" );
 	}
 
+#ifndef ID_DEDICATED
 	win32.g_Joystick.Init();
+#endif // !ID_DEDICATED
 }
 
 /*

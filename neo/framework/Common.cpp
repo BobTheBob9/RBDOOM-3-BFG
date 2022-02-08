@@ -876,6 +876,7 @@ idCommonLocal::RenderSplash
 */
 void idCommonLocal::RenderSplash()
 {
+#ifndef ID_DEDICATED
 	//const emptyCommand_t* renderCommands = NULL;
 
 	// RB: this is the same as Doom 3 renderSystem->BeginFrame()
@@ -908,6 +909,7 @@ void idCommonLocal::RenderSplash()
 
 	// RB: this is the same as Doom 3 renderSystem->EndFrame()
 	//renderSystem->SwapCommandBuffers_FinishRendering( &time_frontend, &time_backend, &time_shadows, &time_gpu );
+#endif // !ID_DEDICATED
 }
 
 /*
@@ -917,6 +919,7 @@ idCommonLocal::RenderBink
 */
 void idCommonLocal::RenderBink( const char* path )
 {
+#ifndef ID_DEDICATED
 	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
 	const float sysHeight = renderSystem->GetHeight();
 	const float sysAspect = sysWidth / sysHeight;
@@ -1028,6 +1031,7 @@ void idCommonLocal::RenderBink( const char* path )
 	// RB end
 
 	material->MakeDefault();
+#endif // !ID_DEDICATED
 }
 
 /*
@@ -1308,6 +1312,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 		whiteMaterial = declManager->FindMaterial( "_white" );
 
+#ifndef ID_DEDICATED
 		if( idStr::Icmp( sys_lang.GetString(), ID_LANG_FRENCH ) == 0 )
 		{
 			// If the user specified french, we show french no matter what SKU
@@ -1341,13 +1346,16 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			// SRS - OSX needs this for some OpenGL drivers, otherwise renders leftover image before splash
 			RenderSplash();
 		}
+#endif // !ID_DEDICATED
 
 
 		int legalStartTime = Sys_Milliseconds();
 		declManager->Init2();
 
+#ifndef ID_DEDICATED
 		// initialize string database so we can use it for loading messages
 		InitLanguageDict();
+#endif // !ID_DEDICATED
 
 		// spawn the game thread, even if we are going to run without SMP
 		// one meg stack, because it can parse decls from gui surfaces (unfortunately)
@@ -1411,7 +1419,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			game->Leaderboards_Init();
 		}
 
+#ifndef ID_DEDICATED
 		CreateMainMenu();
+#endif // !ID_DEDICATED
 
 		commonDialog.Init();
 
@@ -1420,9 +1430,11 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 		AddStartupCommands();
 
+#ifndef ID_DEDICATED
 		StartMenu( true );
+#endif // !ID_DEDICATED
 // SRS - changed ifndef to ifdef since legalMinTime should apply to retail builds, not dev builds
-#ifdef ID_RETAIL
+#ifdef ID_RETAIL && !ID_DEDICATED
 		while( Sys_Milliseconds() - legalStartTime < legalMinTime )
 		{
 			RenderSplash();
@@ -1439,7 +1451,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 		CheckStartupStorageRequirements();
 
-
+#ifndef ID_DEDICATED
 		if( preload_CommonAssets.GetBool() && fileSystem->UsingResourceFiles() )
 		{
 			idPreloadManifest manifest;
@@ -1447,6 +1459,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			globalImages->Preload( manifest, false );
 			soundSystem->Preload( manifest );
 		}
+#endif // !ID_DEDICATED
 
 		fileSystem->EndLevelLoad();
 
@@ -1470,7 +1483,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 
 		com_fullyInitialized = true;
 
-
+#ifndef ID_DEDICATED
 		// No longer need the splash screen
 		if( splashScreen != NULL )
 		{
@@ -1483,10 +1496,16 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 				}
 			}
 		}
+#endif // !ID_DEDICATED
 
 		Printf( "--- Common Initialization Complete ---\n" );
 
 		idLib::Printf( "QA Timing IIS: %06dms\n", Sys_Milliseconds() );
+
+#if ID_DEDICATED
+		Printf("starting map game/mp/d3ctf1 for dedicated server\n");
+		StartNewGame("game/mp/d3ctf1", false, 0);
+#endif // ID_DEDICATED
 	}
 	catch( idException& )
 	{

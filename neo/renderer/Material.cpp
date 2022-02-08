@@ -1296,12 +1296,14 @@ void idMaterial::ParseFragmentMap( idLexer& src, newShaderStage_t* newStage )
 	}
 	str = R_ParsePastImageProgram( src );
 
+#ifndef ID_DEDICATED
 	newStage->fragmentProgramImages[unit] =
 		globalImages->ImageFromFile( str, tf, trp, td, cubeMap );
 	if( !newStage->fragmentProgramImages[unit] )
 	{
 		newStage->fragmentProgramImages[unit] = globalImages->defaultImage;
 	}
+#endif // !ID_DEDICATED
 }
 
 /*
@@ -1436,7 +1438,9 @@ void idMaterial::ParseStage( idLexer& src, const textureRepeat_t trpDefault )
 		if( !token.Icmp( "map" ) )
 		{
 			str = R_ParsePastImageProgram( src );
+#ifndef ID_DEDICATED
 			idStr::Copynz( imageName, str, sizeof( imageName ) );
+#endif // !ID_DEDICATED
 			continue;
 		}
 
@@ -1500,8 +1504,10 @@ void idMaterial::ParseStage( idLexer& src, const textureRepeat_t trpDefault )
 					continue;
 				}
 			}
+#ifndef ID_DEDICATED
 			ts->cinematic = idCinematic::Alloc();
 			ts->cinematic->InitFromFile( token.c_str(), loop );
+#endif // !ID_DEDICATED
 			continue;
 		}
 
@@ -1512,24 +1518,30 @@ void idMaterial::ParseStage( idLexer& src, const textureRepeat_t trpDefault )
 				common->Warning( "missing parameter for 'soundmap' keyword in material '%s'", GetName() );
 				continue;
 			}
+#ifndef ID_DEDICATED
 			ts->cinematic = new( TAG_MATERIAL ) idSndWindow();
 			ts->cinematic->InitFromFile( token.c_str(), true );
+#endif // !ID_DEDICATED
 			continue;
 		}
 
 		if( !token.Icmp( "cubeMap" ) )
 		{
 			str = R_ParsePastImageProgram( src );
+#ifndef ID_DEDICATED
 			idStr::Copynz( imageName, str, sizeof( imageName ) );
 			cubeMap = CF_NATIVE;
+#endif // !ID_DEDICATED
 			continue;
 		}
 
 		if( !token.Icmp( "cameraCubeMap" ) )
 		{
 			str = R_ParsePastImageProgram( src );
+#ifndef ID_DEDICATED
 			idStr::Copynz( imageName, str, sizeof( imageName ) );
 			cubeMap = CF_CAMERA;
+#endif // !ID_DEDICATED
 			continue;
 		}
 
@@ -1906,7 +1918,9 @@ void idMaterial::ParseStage( idLexer& src, const textureRepeat_t trpDefault )
 	// if we are using newStage, allocate a copy of it
 	if( newStage.fragmentProgram || newStage.vertexProgram )
 	{
+#ifndef ID_DEDICATED
 		newStage.glslProgram = renderProgManager.FindGLSLProgram( GetName(), newStage.vertexProgram, newStage.fragmentProgram );
+#endif // !ID_DEDICATED
 		ss->newStage = ( newShaderStage_t* )Mem_Alloc( sizeof( newStage ), TAG_MATERIAL );
 		*( ss->newStage ) = newStage;
 	}
