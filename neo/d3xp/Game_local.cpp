@@ -4035,6 +4035,17 @@ bool idGameLocal::InhibitEntitySpawn( idDict& spawnArgs )
 		}
 	}
 
+	// RB: TrenchBroom interop skip func_group entities
+	{
+		const char* name = spawnArgs.GetString( "classname" );
+		const char* groupType = spawnArgs.GetString( "_tb_type" );
+
+		if( idStr::Icmp( name, "func_group" ) == 0 && ( idStr::Icmp( groupType, "_tb_group" ) == 0 || idStr::Icmp( groupType, "_tb_layer" ) == 0 ) )
+		{
+			result = true;
+		}
+	}
+
 	return result;
 }
 
@@ -5041,6 +5052,8 @@ bool idGameLocal::SkipCinematic( void )
 	{
 		skipCinematic = true;
 		cinematicMaxSkipTime = gameLocal.time + SEC2MS( g_cinematicMaxSkipTime.GetFloat() );
+		// SRS - Skip the remainder of the currently playing cinematic sound
+		soundSystem->GetPlayingSoundWorld()->Skip( cinematicMaxSkipTime );
 	}
 
 	return true;
