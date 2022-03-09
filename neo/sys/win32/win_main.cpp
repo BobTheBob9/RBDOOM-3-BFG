@@ -63,6 +63,7 @@ idCVar Win32Vars_t::win_outputEditString( "win_outputEditString", "1", CVAR_SYST
 idCVar Win32Vars_t::win_viewlog( "win_viewlog", "0", CVAR_SYSTEM | CVAR_INTEGER, "" );
 idCVar Win32Vars_t::win_timerUpdate( "win_timerUpdate", "0", CVAR_SYSTEM | CVAR_BOOL, "allows the game to be updated while dragging the window" );
 idCVar Win32Vars_t::win_allowMultipleInstances( "win_allowMultipleInstances", "0", CVAR_SYSTEM | CVAR_BOOL, "allow multiple instances running concurrently" );
+idCVar Win32Vars_t::win_pauseWithoutFocus( "win_pauseWithoutFocus", "1", CVAR_SYSTEM | CVAR_BOOL, "whether to pause the game when window focus is lost" );
 
 // RB
 idCVar Win32Vars_t::sys_useSteamPath( "sys_useSteamPath", "0", CVAR_SYSTEM | CVAR_BOOL | CVAR_ARCHIVE, "Look for Steam Doom 3 BFG path instead of local installation" );
